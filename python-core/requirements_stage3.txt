@@ -1,0 +1,14 @@
+# ELIXI AI - Stage 3 Dependencies
+# Full System Control Requirements
+
+# Core dependencies (already installed)
+requests>=2.31.0
+pymongo>=4.6.0
+python-dotenv>=1.0.0
+psutil>=5.9.0
+
+# Stage 3 specific dependencies
+comtypes>=1.4.0          # Windows audio control
+pycaw>=20231129          # Python Core Audio Windows Library
+Pillow>=10.0.0           # Screenshot capture
+pywin32>=306             # Windows API access (optional, for advanced features)

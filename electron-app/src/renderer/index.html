@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ELIXI AI Brain</title>
+    <link rel="stylesheet" href="./styles/main.css" />
+  </head>
+  <body>
+    <div class="ui">
+      <header class="top-bar drag-region">
+        <div class="title-left">
+          <span class="app-icon"></span>
+          <div class="brand">
+            <p class="brand-kicker">ELIXI AI</p>
+            <h1>ELIXI AI Brain</h1>
+          </div>
+        </div>
+        <div class="title-center">ELIXI AI Brain</div>
+        <div class="top-actions">
+          <div class="status-pill no-drag" id="statusPill">Booting</div>
+          <div class="window-controls no-drag">
+            <button class="window-btn" id="windowMinimize" aria-label="Minimize">
+              <span class="bar"></span>
+            </button>
+            <button class="window-btn" id="windowMaximize" aria-label="Maximize">
+              <span class="square"></span>
+            </button>
+            <button class="window-btn close" id="windowClose" aria-label="Close">
+              <span class="x"></span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <nav class="nav-tabs glass">
+        <button class="nav-tab active" data-tab="chat" id="tabChat">Chat</button>
+        <button class="nav-tab" data-tab="system" id="tabSystem">System</button>
+        <button class="nav-tab" data-tab="automation" id="tabAutomation">Automation</button>
+        <button class="nav-tab" data-tab="memory" id="tabMemory">Memory</button>
+        <button class="nav-tab" data-tab="monitor" id="tabMonitor">Monitor</button>
+      </nav>
+
+      <main class="dashboard">
+        <div class="tab-content active" id="content-chat">
+          <section class="panel center-panel glass">
+            <div class="panel-header">
+              <span>Main AI Interface</span>
+              <span class="panel-tag">Realtime</span>
+            </div>
+            <div class="response-box">
+              <p>Assistant Response</p>
+              <div class="response-text" id="assistantResponse">Awaiting input...</div>
+            </div>
+            <div class="chat-feed" id="chatFeed"></div>
+            <div class="input-row">
+              <div class="input-wrap">
+                <input id="userInput" type="text" placeholder="Ask ELIXI anything..." autocomplete="off" />
+                <button class="send-button" id="sendButton">Send</button>
+              </div>
+            </div>
+          </section>
+
+          <aside class="panel right-panel glass float">
+            <div class="core-title">
+              <h2>ELIXI AI Brain</h2>
+              <p>Neural Core Online</p>
+            </div>
+            <div class="core-stats">
+              <div>
+                <span>Status</span>
+                <strong id="coreStatus">Ready</strong>
+              </div>
+              <div>
+                <span>Connection</span>
+                <strong id="coreSynapse">98%</strong>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <div class="tab-content" id="content-system">
+          <section class="panel full-panel glass">
+            <div class="panel-header">
+              <span>System Control</span>
+              <span class="panel-tag">Core</span>
+            </div>
+            <div class="control-sections">
+              <div class="control-section">
+                <h3>Hardware Control</h3>
+                <div class="control-grid">
+                  <button class="control-tile" id="btnVolume" data-action="volume">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l4 4V6L7 10H4Zm12.5 2a3.5 3.5 0 0 0-2-3.15v6.3A3.5 3.5 0 0 0 16.5 12Zm0-8.5v2.06A7 7 0 0 1 20 12a7 7 0 0 1-3.5 6.44v2.06A9 9 0 0 0 22 12a9 9 0 0 0-5.5-8.5Z"/></svg>
+                    <span>Volume</span>
+                  </button>
+                  <button class="control-tile" id="btnBrightness" data-action="brightness">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v2m6 1l-1.4 1.4m2 4h2m-2 6l1.4-1.4m-8 4v-2m-6-1l1.4-1.4m-2-4h-2m2-6l-1.4 1.4M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10-4.5-10-10-10z"/></svg>
+                    <span>Brightness</span>
+                  </button>
+                  <button class="control-tile" id="btnWiFi" data-action="wifi">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 0 0-8 8h2a6 6 0 1 1 12 0h2a8 8 0 0 0-8-8Zm0 4a4 4 0 0 0-4 4h2a2 2 0 1 1 4 0h2a4 4 0 0 0-4-4Zm0 6a2 2 0 0 0-2 2h4a2 2 0 0 0-2-2Z"/></svg>
+                    <span>WiFi</span>
+                  </button>
+                  <input type="range" class="slider" id="volumeSlider" min="0" max="100" value="50" style="display:none;" />
+                  <input type="range" class="slider" id="brightnessSlider" min="0" max="100" value="75" style="display:none;" />
+                </div>
+              </div>
+
+              <div class="control-section">
+                <h3>Applications</h3>
+                <div class="app-list" id="appList">
+                  <div class="loading">Loading applications...</div>
+                </div>
+              </div>
+
+              <div class="control-section">
+                <h3>Power Options</h3>
+                <div class="control-grid">
+                  <button class="control-tile" id="btnSleep" data-action="sleep">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    <span>Sleep</span>
+                  </button>
+                  <button class="control-tile" id="btnRestart" data-action="restart">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c0-3.32 2.69-6 6-6 1.5 0 2.9.54 4 1.44V2h2v6h-6V6h2.22C10 4.9 8.63 4 7 4c-2.21 0-4 1.79-4 4h2m10 8c0-3.32-2.69-6-6-6-1.5 0-2.9.54-4 1.44v4.56h-2V8h6v2h-2.22C8.5 11.1 9.37 12 11 12c2.21 0 4-1.79 4-4h-2m0 8v-6h2V14z"/></svg>
+                    <span>Restart</span>
+                  </button>
+                  <button class="control-tile power" id="btnShutdown" data-action="shutdown">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 2h2v10h-2V2Zm1 20a9 9 0 0 1-4.5-16.8l1 1.8A7 7 0 1 0 15.5 7l1-1.8A9 9 0 0 1 12 22Z"/></svg>
+                    <span>Shutdown</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="tab-content" id="content-automation">
+          <section class="panel full-panel glass">
+            <div class="panel-header">
+              <span>Automation & Commands</span>
+              <span class="panel-tag">Smart</span>
+            </div>
+            <div class="control-sections">
+              <div class="control-section">
+                <h3>Custom Commands</h3>
+                <div class="command-list" id="commandList">
+                  <div class="loading">Loading commands...</div>
+                </div>
+                <button class="action-btn" id="btnNewCommand">+ New Command</button>
+              </div>
+
+              <div class="control-section">
+                <h3>Workflows</h3>
+                <div class="workflow-list" id="workflowList">
+                  <div class="loading">Loading workflows...</div>
+                </div>
+                <button class="action-btn" id="btnNewWorkflow">+ New Workflow</button>
+              </div>
+
+              <div class="control-section">
+                <h3>Learned Habits</h3>
+                <div class="habits-list" id="habitsList">
+                  <div class="loading">Learning habits...</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="tab-content" id="content-memory">
+          <section class="panel full-panel glass">
+            <div class="panel-header">
+              <span>Memory & Preferences</span>
+              <span class="panel-tag">Personal</span>
+            </div>
+            <div class="control-sections">
+              <div class="control-section">
+                <h3>Recent Memories</h3>
+                <div class="memory-list" id="memoryList">
+                  <div class="loading">Loading memories...</div>
+                </div>
+              </div>
+
+              <div class="control-section">
+                <h3>Preferences</h3>
+                <div class="preferences-list" id="preferencesList">
+                  <div class="loading">Loading preferences...</div>
+                </div>
+              </div>
+
+              <div class="control-section">
+                <h3>Suggestions</h3>
+                <div class="suggestions-list" id="suggestionsList">
+                  <div class="loading">Loading suggestions...</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="tab-content" id="content-monitor">
+          <section class="panel full-panel glass">
+            <div class="panel-header">
+              <span>System Monitor</span>
+              <span class="panel-tag">Live</span>
+            </div>
+            <div class="monitor-grid">
+              <div class="monitor-card">
+                <h4>CPU Usage</h4>
+                <div class="monitor-value" id="monitorCPU">--</div>
+                <div class="monitor-detail" id="monitorCPUInfo">Initializing...</div>
+              </div>
+              <div class="monitor-card">
+                <h4>Memory Usage</h4>
+                <div class="monitor-value" id="monitorMemory">--</div>
+                <div class="monitor-detail" id="monitorMemoryInfo">Initializing...</div>
+              </div>
+              <div class="monitor-card">
+                <h4>Disk Usage</h4>
+                <div class="monitor-value" id="monitorDisk">--</div>
+                <div class="monitor-detail" id="monitorDiskInfo">Initializing...</div>
+              </div>
+              <div class="monitor-card">
+                <h4>Network</h4>
+                <div class="monitor-value" id="monitorNetwork">--</div>
+                <div class="monitor-detail" id="monitorNetworkInfo">Initializing...</div>
+              </div>
+            </div>
+            <div class="process-list">
+              <h4>Top Processes</h4>
+              <div id="topProcesses">
+                <div class="loading">Loading processes...</div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+
+
+      <button class="mic-button" id="micButton" aria-label="Microphone">
+        <span class="pulse-ring"></span>
+        <span class="pulse-ring ring"></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12Z" />
+        </svg>
+      </button>
+
+      <div class="ambient-orb orb-1"></div>
+      <div class="ambient-orb orb-2"></div>
+      <div class="ambient-orb orb-3"></div>
+    </div>
+
+    <script src="./js/renderer.js"></script>
+  </body>
+</html>

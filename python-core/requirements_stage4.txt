@@ -1,0 +1,40 @@
+# ELIXI AI - Stage 4 Requirements
+# Automation, Memory, Learning, and Suggestions
+
+# Existing Dependencies from Stage 1-3
+flask==2.3.3
+pymongo==4.5.0
+python-dotenv==1.0.0
+pyaudio==0.2.13
+elevenlabs>=0.2.20  # Updated for Pydantic 2.x compatibility
+requests==2.31.0
+beautifulsoup4==4.12.2
+psutil==5.9.5
+pillow==10.0.1
+pydub==0.25.1
+google-cloud-speech==2.22.0
+pydantic<2.0  # Pin Pydantic version for stability with other libraries
+
+# New Stage 4 Dependencies
+
+# Machine Learning & Pattern Analysis
+scikit-learn==1.3.2          # ML algorithms, pattern detection, clustering
+numpy==1.24.3               # Numerical computing
+pandas==2.1.0               # Data analysis and manipulation
+scipy==1.11.3               # Statistical analysis, signal processing
+
+# Task Scheduling & Timing
+APScheduler==3.10.4         # Advanced task scheduling for timed workflows
+python-dateutil==2.8.2      # Date/time utilities
+
+# Optional: Advanced Analytics
+matplotlib==3.8.0           # Data visualization for analytics
+seaborn==0.12.2             # Data visualization enhancements
+
+# Optional: Natural Language Processing (for intent matching)
+nltk==3.8.1                 # Natural language toolkit
+
+# Development & Testing (if not already installed)
+pytest==7.4.4               # Testing framework
+pytest-cov==4.1.0           # Code coverage for tests
+black==23.9.1               # Code formatting

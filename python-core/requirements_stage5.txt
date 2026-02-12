@@ -1,0 +1,21 @@
+# Stage 5 Requirements - Advanced AI Features
+# Phase 1: Screen Understanding
+
+# Image processing and OCR
+pillow>=10.0.0           # Image processing and screenshot manipulation
+pytesseract>=0.3.10      # Tesseract OCR wrapper for text extraction
+easyocr>=1.7.0          # Alternative OCR engine with better accuracy
+
+# Screen automation and window management
+pyautogui>=0.9.53       # Screen capture and automation
+pygetwindow>=0.0.9      # Window management and information
+
+# Phase 3: News & Weather (Future)
+requests>=2.31.0        # HTTP requests for APIs
+pytz>=2024.1            # Timezone handling
+
+# Phase 6: Background mode (Future)
+pystray>=0.19.4         # System tray integration
+
+# Optional: Fast caching (Alternative to MongoDB)
+# redis>=5.0.0            # Fast caching (uncomment if using Redis)
