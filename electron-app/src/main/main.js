@@ -521,6 +521,178 @@ ipcMain.handle('close-app', () => {
   app.quit();
 });
 
+// ==================== STAGE 5 PHASE 5: BACKGROUND MODE & AUTO-START ====================
+
+// Background Mode IPC Handlers
+ipcMain.handle('background-mode-start', async (event) => {
+  try {
+    const response = await fetch('http://localhost:5000/system/background-mode', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enable: true })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Background mode start error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('background-mode-stop', async (event) => {
+  try {
+    const response = await fetch('http://localhost:5000/system/background-mode', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enable: false })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Background mode stop error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('background-mode-status', async (event) => {
+  try {
+    const response = await fetch('http://localhost:5000/system/background-status');
+    return await response.json();
+  } catch (error) {
+    console.error('Background mode status error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('background-mode-memory', async (event) => {
+  try {
+    const response = await fetch('http://localhost:5000/system/background-memory');
+    return await response.json();
+  } catch (error) {
+    console.error('Background memory check error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('background-mode-cleanup', async (event) => {
+  try {
+    const response = await fetch('http://localhost:5000/system/background-cleanup', {
+      method: 'POST'
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Background cleanup error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('background-mode-wake-triggers', async (event, triggers) => {
+  try {
+    const response = await fetch('http://localhost:5000/system/background-wake-triggers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(triggers)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Wake triggers error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Auto-Start IPC Handlers
+ipcMain.handle('auto-start-enable', async (event) => {
+  try {
+    const response = await fetch('http://localhost:5000/system/auto-start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'enable' })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Auto-start enable error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('auto-start-disable', async (event) => {
+  try {
+    const response = await fetch('http://localhost:5000/system/auto-start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'disable' })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Auto-start disable error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('auto-start-status', async (event) => {
+  try {
+    const response = await fetch('http://localhost:5000/system/auto-start-status');
+    return await response.json();
+  } catch (error) {
+    console.error('Auto-start status error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Floating Window Control
+ipcMain.handle('floating-window-show', async (event) => {
+  if (mainWindow) {
+    mainWindow.show();
+    mainWindow.focus();
+  }
+  return { success: true };
+});
+
+ipcMain.handle('floating-window-hide', async (event) => {
+  if (mainWindow) {
+    mainWindow.hide();
+  }
+  return { success: true };
+});
+
+ipcMain.handle('floating-window-toggle', async (event) => {
+  if (mainWindow) {
+    if (mainWindow.isVisible()) {
+      mainWindow.hide();
+      return { success: true, visible: false };
+    } else {
+      mainWindow.show();
+      mainWindow.focus();
+      return { success: true, visible: true };
+    }
+  }
+  return { success: false };
+});
+
+ipcMain.handle('floating-window-position', async (event, x, y) => {
+  if (mainWindow) {
+    mainWindow.setPosition(x, y);
+    return { success: true };
+  }
+  return { success: false };
+});
+
+ipcMain.handle('floating-window-size', async (event, width, height) => {
+  if (mainWindow) {
+    mainWindow.setSize(width, height, true);
+    return { success: true };
+  }
+  return { success: false };
+});
+
+ipcMain.handle('floating-window-always-on-top', async (event, alwaysOnTop) => {
+  if (mainWindow) {
+    mainWindow.setAlwaysOnTop(alwaysOnTop);
+    return { success: true, alwaysOnTop };
+  }
+  return { success: false };
+});
+
+// ==================== END PHASE 5 ====================
+
 // App event listeners
 app.on('ready', () => {
   startPythonBackend();

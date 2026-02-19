@@ -1,0 +1,628 @@
+/**
+ * Stage 5 Phase 5: Floating Window Styles
+ * File: electron-app/src/renderer/styles/floating-window.css
+ * Purpose: Glassmorphism styling for floating assistant overlay
+ * Size: 200+ lines
+ */
+
+/* =========================================
+   Root & Typography
+   ========================================= */
+
+:root {
+  --color-primary: #6366f1;
+  --color-primary-dark: #4f46e5;
+  --color-primary-light: #818cf8;
+  
+  --color-background: rgba(15, 23, 42, 0.85);
+  --color-background-light: rgba(30, 41, 59, 0.8);
+  --color-border: rgba(148, 163, 184, 0.2);
+  --color-border-light: rgba(148, 163, 184, 0.3);
+  
+  --color-text: #f1f5f9;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+  
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 300ms ease-in-out;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4);
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-size: 14px;
+  background: transparent;
+}
+
+/* =========================================
+   Floating Window Container
+   ========================================= */
+
+.floating-window {
+  position: fixed;
+  top: 50%;
+  right: 50px;
+  width: 600px;
+  height: 500px;
+  border-radius: 16px;
+  
+  /* Glassmorphism effect */
+  background: var(--color-background);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border);
+  
+  /* Shadow */
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    var(--shadow-xl);
+  
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  
+  /* Animation */
+  animation: slideIn 300ms ease-out forwards;
+  transform: translateY(-50%);
+  
+  /* Z-index for always on top */
+  z-index: 10000;
+  
+  /* User select */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-40%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%);
+  }
+}
+
+/* =========================================
+   Title Bar (Draggable)
+   ========================================= */
+
+.floating-title-bar {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(59, 130, 246, 0.05));
+  border-bottom: 1px solid var(--color-border);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  /* Draggable */
+  -webkit-app-region: drag;
+  cursor: move;
+  
+  /* Height */
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
+.floating-title-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  
+  /* Not draggable for buttons */
+  -webkit-app-region: no-drag;
+}
+
+.floating-icon {
+  color: var(--color-primary);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.floating-title-text {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text);
+  letter-spacing: 0.5px;
+}
+
+/* =========================================
+   Title Bar Buttons
+   ========================================= */
+
+.floating-title-buttons {
+  display: flex;
+  gap: 8px;
+  -webkit-app-region: no-drag;
+}
+
+.floating-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  padding: 0;
+  line-height: 1;
+}
+
+.floating-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+  transform: scale(1.05);
+}
+
+.floating-btn:active {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(0.95);
+}
+
+.floating-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--color-error);
+}
+
+/* =========================================
+   Content Area
+   ========================================= */
+
+.floating-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.05), transparent);
+}
+
+/* =========================================
+   Input Section
+   ========================================= */
+
+.floating-input-section {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid var(--color-border);
+  background: rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.floating-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--color-text);
+  font-size: 14px;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.floating-input:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--color-primary-light);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+}
+
+.floating-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.floating-send-btn {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.floating-send-btn:hover {
+  background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+}
+
+.floating-send-btn:active {
+  transform: scale(0.95);
+}
+
+/* =========================================
+   Response Section
+   ========================================= */
+
+.floating-response-section {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.floating-response {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.floating-response::-webkit-scrollbar {
+  width: 6px;
+}
+
+.floating-response::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.floating-response::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.floating-response::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* =========================================
+   Welcome Message
+   ========================================= */
+
+.floating-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.floating-welcome h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.floating-welcome p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* =========================================
+   Messages
+   ========================================= */
+
+.floating-message {
+  display: flex;
+  margin: 8px 0;
+  animation: messageSlideIn 200ms ease-out;
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.floating-message-user {
+  justify-content: flex-end;
+}
+
+.floating-message-assistant {
+  justify-content: flex-start;
+}
+
+.floating-message-error {
+  justify-content: center;
+}
+
+.floating-message-notification {
+  justify-content: center;
+}
+
+.floating-message-content {
+  max-width: 90%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.floating-message-user .floating-message-content {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  color: white;
+  border-radius: 12px 4px 12px 12px;
+}
+
+.floating-message-assistant .floating-message-content {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-light);
+  border-radius: 4px 12px 12px 12px;
+}
+
+.floating-message-error .floating-message-content {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+  border-radius: 8px;
+}
+
+.floating-message-notification .floating-message-content {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+  border: 1px solid var(--color-success);
+  border-radius: 8px;
+}
+
+/* =========================================
+   Status Bar
+   ========================================= */
+
+.floating-status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-top: 1px solid var(--color-border);
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 12px;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.floating-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.floating-status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* =========================================
+   Resize Handles
+   ========================================= */
+
+.floating-resize-handles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.floating-resize-handle {
+  position: absolute;
+  pointer-events: auto;
+}
+
+.floating-resize-top {
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 4px;
+  cursor: ns-resize;
+}
+
+.floating-resize-bottom {
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 4px;
+  cursor: ns-resize;
+}
+
+.floating-resize-left {
+  left: 0;
+  top: 10%;
+  bottom: 10%;
+  width: 4px;
+  cursor: ew-resize;
+}
+
+.floating-resize-right {
+  right: 0;
+  top: 10%;
+  bottom: 10%;
+  width: 4px;
+  cursor: ew-resize;
+}
+
+.floating-resize-top-left {
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  cursor: nwse-resize;
+  border-radius: 16px 0 0 0;
+}
+
+.floating-resize-top-right {
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  cursor: nesw-resize;
+  border-radius: 0 16px 0 0;
+}
+
+.floating-resize-bottom-left {
+  bottom: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  cursor: nesw-resize;
+  border-radius: 0 0 0 16px;
+}
+
+.floating-resize-bottom-right {
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  cursor: nwse-resize;
+  border-radius: 0 0 16px 0;
+}
+
+.floating-resize-handle:hover {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+/* =========================================
+   Disabled State
+   ========================================= */
+
+.floating-input:disabled,
+.floating-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   Floating Window Responsive
+   ========================================= */
+
+@media (max-width: 1200px) {
+  .floating-window {
+    width: 500px;
+    height: 450px;
+  }
+}
+
+@media (max-width: 800px) {
+  .floating-window {
+    width: 400px;
+    height: 400px;
+    right: 20px;
+  }
+}
+
+/* =========================================
+   Dark Mode (Already Applied)
+   ========================================= */
+
+/* Accent colors for different states */
+.floating-window.focused {
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset,
+    0 0 20px rgba(99, 102, 241, 0.3),
+    var(--shadow-xl);
+}
+
+.floating-window.loading {
+  opacity: 0.8;
+}
+
+.floating-window.minimized {
+  opacity: 0;
+  pointer-events: none;
+  animation: slideOut 300ms ease-in forwards;
+}
+
+@keyframes slideOut {
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+/* =========================================
+   Context Menu
+   ========================================= */
+
+.floating-context-menu {
+  position: fixed;
+  background: var(--color-background-light);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  min-width: 180px;
+  z-index: 10001;
+}
+
+.floating-context-menu-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 13px;
+  transition: all var(--transition-fast);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.floating-context-menu-item:hover {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--color-primary-light);
+}
+
+.floating-context-menu-separator {
+  height: 1px;
+  background: var(--color-border);
+  margin: 4px 0;
+}

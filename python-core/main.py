@@ -41,6 +41,23 @@ except ImportError:
     STAGE5_AVAILABLE = False
     print("[Warning] Stage 5 modules not yet available")
 
+# Stage 5 Phase 4: Model Management
+try:
+    from model_manager import ModelManager
+    PHASE4_AVAILABLE = True
+except ImportError:
+    PHASE4_AVAILABLE = False
+    print("[Warning] Phase 4 Model Manager not yet available")
+
+# Stage 5 Phase 5: Background Mode and Auto-Start
+try:
+    from background_mode import BackgroundModeManager, init_background_mode
+    from auto_start_config import AutoStartConfiguration
+    PHASE5_AVAILABLE = True
+except ImportError:
+    PHASE5_AVAILABLE = False
+    print("[Warning] Phase 5 Background Mode not yet available")
+
 load_dotenv()
 
 STARTED_AT = time.time()
@@ -81,6 +98,8 @@ _coding_assistant = None
 _news_weather_service = None
 _model_manager = None
 _performance_monitor = None
+_background_mode_manager = None
+_auto_start_config = None
 
 
 def get_db():
@@ -289,10 +308,20 @@ def get_news_weather_service():
 
 
 def get_model_manager():
-    """Get Stage 5 model manager (ModelManager)."""
-    # Will be implemented in Phase 4
-    # Placeholder for future implementation
-    return None
+    """Get Stage 5 Phase 4 model manager (ModelManager)."""
+    global _model_manager
+    if not STAGE5_AVAILABLE or not PHASE4_AVAILABLE:
+        return None
+    if _model_manager is None:
+        try:
+            _model_manager = ModelManager(
+                ollama_brain=get_ollama_brain(),
+                ollama_base_url="http://localhost:11434"
+            )
+        except Exception as e:
+            print(f"[Warning] ModelManager not available: {e}")
+            return None
+    return _model_manager
 
 
 def get_performance_monitor():
@@ -304,6 +333,34 @@ def get_performance_monitor():
         from stage5_base import get_performance_monitor as get_monitor
         _performance_monitor = get_monitor()
     return _performance_monitor
+
+
+def get_background_mode_manager():
+    """Get Stage 5 Phase 5 background mode manager."""
+    global _background_mode_manager
+    if not STAGE5_AVAILABLE or not PHASE5_AVAILABLE:
+        return None
+    if _background_mode_manager is None:
+        try:
+            _background_mode_manager = init_background_mode()
+        except Exception as e:
+            print(f"[Warning] BackgroundModeManager not available: {e}")
+            return None
+    return _background_mode_manager
+
+
+def get_auto_start_config():
+    """Get Stage 5 Phase 5 auto-start configuration."""
+    global _auto_start_config
+    if not STAGE5_AVAILABLE or not PHASE5_AVAILABLE:
+        return None
+    if _auto_start_config is None:
+        try:
+            _auto_start_config = AutoStartConfiguration()
+        except Exception as e:
+            print(f"[Warning] AutoStartConfiguration not available: {e}")
+            return None
+    return _auto_start_config
 
 
 def generate_reply(prompt):
@@ -426,6 +483,35 @@ class ElixiHandler(BaseHTTPRequestHandler):
             
             result = news_service.get_cached_news()
             self._send_json(result)
+            return
+
+        # ==================== STAGE 5 PHASE 4: AI MODEL ENDPOINTS (GET) ====================
+        if self.path == "/ai/available-models":
+            if not STAGE5_AVAILABLE or not PHASE4_AVAILABLE:
+                self._send_json({"success": False, "error": "Phase 4 not available"}, status=503)
+                return
+            
+            model_manager = get_model_manager()
+            if not model_manager:
+                self._send_json({"success": False, "error": "Model manager not available"}, status=503)
+                return
+            
+            models = model_manager.get_available_models()
+            self._send_json({"success": True, "data": models})
+            return
+        
+        if self.path == "/ai/model-status":
+            if not STAGE5_AVAILABLE or not PHASE4_AVAILABLE:
+                self._send_json({"success": False, "error": "Phase 4 not available"}, status=503)
+                return
+            
+            model_manager = get_model_manager()
+            if not model_manager:
+                self._send_json({"success": False, "error": "Model manager not available"}, status=503)
+                return
+            
+            status = model_manager.get_current_status()
+            self._send_json(status)
             return
 
         self._send_json({"success": False, "error": "Not found"}, status=404)
@@ -1659,14 +1745,198 @@ class ElixiHandler(BaseHTTPRequestHandler):
             self._send_json(result)
             return
         
-        # Model Management (Phase 4)
-        # Coming: /ai/available-models, /ai/switch-model, /ai/model-status
+        # ==================== STAGE 5 PHASE 4: AI MODEL MANAGEMENT (POST) ====================
+        if self.path == "/ai/switch-model":
+            if not STAGE5_AVAILABLE or not PHASE4_AVAILABLE:
+                self._send_json({"success": False, "error": "Phase 4 not available"}, status=503)
+                return
+            
+            model_manager = get_model_manager()
+            if not model_manager:
+                self._send_json({"success": False, "error": "Model manager not available"}, status=503)
+                return
+            
+            payload = self._read_json()
+            model_name = payload.get('model_name', '')
+            auto_pull = payload.get('auto_pull', False)
+            
+            if not model_name:
+                self._send_json({"success": False, "error": "model_name is required"}, status=400)
+                return
+            
+            result = model_manager.switch_model(model_name, auto_pull=auto_pull)
+            self._send_json({"success": result.get("success", False), "data": result})
+            return
         
-        # Background Mode (Phase 5)
-        # Coming: /system/background-mode, /system/background-status, /system/auto-start
+        if self.path == "/ai/download-model":
+            if not STAGE5_AVAILABLE or not PHASE4_AVAILABLE:
+                self._send_json({"success": False, "error": "Phase 4 not available"}, status=503)
+                return
+            
+            model_manager = get_model_manager()
+            if not model_manager:
+                self._send_json({"success": False, "error": "Model manager not available"}, status=503)
+                return
+            
+            payload = self._read_json()
+            model_name = payload.get('model_name', '')
+            auto_switch = payload.get('auto_switch', False)
+            
+            if not model_name:
+                self._send_json({"success": False, "error": "model_name is required"}, status=400)
+                return
+            
+            result = model_manager.download_model(model_name, auto_switch=auto_switch)
+            self._send_json({"success": result.get("success", False), "data": result})
+            return
         
-        # ==================== END STAGE 4 ====================
-
+        if self.path == "/ai/benchmark-model":
+            if not STAGE5_AVAILABLE or not PHASE4_AVAILABLE:
+                self._send_json({"success": False, "error": "Phase 4 not available"}, status=503)
+                return
+            
+            model_manager = get_model_manager()
+            if not model_manager:
+                self._send_json({"success": False, "error": "Model manager not available"}, status=503)
+                return
+            
+            payload = self._read_json()
+            model_name = payload.get('model_name', '')
+            num_prompts = payload.get('num_prompts', 5)
+            
+            if not model_name:
+                self._send_json({"success": False, "error": "model_name is required"}, status=400)
+                return
+            
+            result = model_manager.benchmark_model(model_name, num_prompts=num_prompts)
+            self._send_json(result)
+            return
+        
+        # ==================== STAGE 5 PHASE 5: BACKGROUND MODE & AUTO-START ====================
+        
+        # Background Mode Control
+        if self.path == "/system/background-mode":
+            if not STAGE5_AVAILABLE or not PHASE5_AVAILABLE:
+                self._send_json({"success": False, "error": "Phase 5 not available"}, status=503)
+                return
+            
+            manager = get_background_mode_manager()
+            if not manager:
+                self._send_json({"success": False, "error": "Background mode manager not available"}, status=503)
+                return
+            
+            payload = self._read_json()
+            enable = payload.get('enable', False)
+            
+            if enable:
+                result = manager.start_background_mode()
+            else:
+                result = manager.stop_background_mode()
+            
+            self._send_json(result)
+            return
+        
+        if self.path == "/system/background-status":
+            if not STAGE5_AVAILABLE or not PHASE5_AVAILABLE:
+                self._send_json({"success": False, "error": "Phase 5 not available"}, status=503)
+                return
+            
+            manager = get_background_mode_manager()
+            if not manager:
+                self._send_json({"success": False, "error": "Background mode manager not available"}, status=503)
+                return
+            
+            result = manager.get_background_status()
+            self._send_json(result)
+            return
+        
+        if self.path == "/system/background-memory":
+            if not STAGE5_AVAILABLE or not PHASE5_AVAILABLE:
+                self._send_json({"success": False, "error": "Phase 5 not available"}, status=503)
+                return
+            
+            manager = get_background_mode_manager()
+            if not manager:
+                self._send_json({"success": False, "error": "Background mode manager not available"}, status=503)
+                return
+            
+            memory_info = manager.get_memory_usage()
+            self._send_json({"success": True, "data": memory_info})
+            return
+        
+        if self.path == "/system/background-cleanup":
+            if not STAGE5_AVAILABLE or not PHASE5_AVAILABLE:
+                self._send_json({"success": False, "error": "Phase 5 not available"}, status=503)
+                return
+            
+            manager = get_background_mode_manager()
+            if not manager:
+                self._send_json({"success": False, "error": "Background mode manager not available"}, status=503)
+                return
+            
+            result = manager.cleanup_memory()
+            self._send_json(result)
+            return
+        
+        if self.path == "/system/background-wake-triggers":
+            if not STAGE5_AVAILABLE or not PHASE5_AVAILABLE:
+                self._send_json({"success": False, "error": "Phase 5 not available"}, status=503)
+                return
+            
+            manager = get_background_mode_manager()
+            if not manager:
+                self._send_json({"success": False, "error": "Background mode manager not available"}, status=503)
+                return
+            
+            payload = self._read_json()
+            hotkey = payload.get('hotkey')
+            voice = payload.get('voice')
+            api = payload.get('api')
+            
+            result = manager.set_wake_triggers(hotkey=hotkey, voice=voice, api=api)
+            self._send_json(result)
+            return
+        
+        # Auto-Start Configuration
+        if self.path == "/system/auto-start":
+            if not STAGE5_AVAILABLE or not PHASE5_AVAILABLE:
+                self._send_json({"success": False, "error": "Phase 5 not available"}, status=503)
+                return
+            
+            config = get_auto_start_config()
+            if not config:
+                self._send_json({"success": False, "error": "Auto-start configuration not available"}, status=503)
+                return
+            
+            payload = self._read_json()
+            action = payload.get('action', 'status')  # status, enable, disable
+            
+            if action == 'enable':
+                result = config.enable_auto_start()
+            elif action == 'disable':
+                result = config.disable_auto_start()
+            else:  # status
+                result = config.get_status()
+            
+            self._send_json(result)
+            return
+        
+        if self.path == "/system/auto-start-status":
+            if not STAGE5_AVAILABLE or not PHASE5_AVAILABLE:
+                self._send_json({"success": False, "error": "Phase 5 not available"}, status=503)
+                return
+            
+            config = get_auto_start_config()
+            if not config:
+                self._send_json({"success": False, "error": "Auto-start configuration not available"}, status=503)
+                return
+            
+            result = config.get_status()
+            self._send_json(result)
+            return
+        
+        # ==================== END PHASE 5 ====================
+        
         self._send_json({"success": False, "error": "Not found"}, status=404)
 
 
